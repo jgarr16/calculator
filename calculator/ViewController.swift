@@ -35,23 +35,65 @@ class ViewController: UIViewController {
     
     
     @IBAction func tappedPlus(sender: AnyObject) {
+        changeMode(modes.ADDITION)
+        
     }
     @IBAction func tappedMinus(sender: AnyObject) {
+        changeMode(modes.SUBTRACTION)
+        
     }
     @IBAction func tappedEqual(sender: AnyObject) {
+        guard let num:Int = Int(labelString) else {
+            return
+        }
+        if currentMode == modes.NOT_SET || lastButtonWasMode {
+            return
+        }
+        if currentMode == modes.ADDITION {
+            savedNum += num
+        }
+        else if currentMode == modes.SUBTRACTION {
+            savedNum -= num
+        }
+        currentMode = modes.NOT_SET
+        labelString = "\(savedNum)"
+        updateText()
+        lastButtonWasMode = true
     }
     @IBAction func tappedClear(sender: AnyObject) {
+        labelString = "0"
+        label.text = "0"
+        currentMode = modes.NOT_SET
+        savedNum = 0
+        lastButtonWasMode = false
     }
     
     func tappedNumber(num:Int) {
-        
+        if lastButtonWasMode {
+            lastButtonWasMode = false
+            labelString = "0"
+        }
+        labelString = labelString.stringByAppendingString("\(num)")
+        updateText()
     }
     
     func updateText() {
-        
+        guard let labelInt:Int = Int(labelString) else {
+            label.text = "Int conversion failed"
+            return
+        }
+        if currentMode == modes.NOT_SET {
+            savedNum = labelInt
+        }
+        label.text = "\(labelInt)"
     }
     
     func changeMode(newMode:modes) {
+        if savedNum == 0 {
+            return
+        }
+        currentMode = newMode
+        lastButtonWasMode = true
         
     }
     
